@@ -22,22 +22,25 @@
 
 <script>
 import Pill from './Pill';
+const { ipcRenderer } = window.require('electron');
 
 export default {
     data () {
         return {
             files: [],
-            groupedWords: [
-                { name: 'i', amount: 1234 },
-                { name: 'you', amount: 900 },
-                { name: 'he', amount: 853 }
-            ]
+            groupedWords: []
         }
     },
 
     methods: {
         processSubtitles () {
-            console.log(this.files);
+            const paths = this.files.map(f => f.path);
+
+            ipcRenderer.send('process-subtitles', paths);
+            ipcRenderer.on('process-subtitles', (event, resp) => {
+                console.log(resp);
+                this.groupedWords = resp;
+            });
         }
     },
 
