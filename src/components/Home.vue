@@ -22,7 +22,7 @@
 
 <script>
 import Pill from './Pill';
-const { ipcRenderer } = window.require('electron');
+const { ipcRenderer } = require('electron');
 
 export default {
     data () {
@@ -36,9 +36,10 @@ export default {
         processSubtitles () {
             const paths = this.files.map(f => f.path);
 
+            if (!paths.length) return;
+
             ipcRenderer.send('process-subtitles', paths);
             ipcRenderer.on('process-subtitles', (event, resp) => {
-                console.log(resp);
                 this.groupedWords = resp;
             });
         }

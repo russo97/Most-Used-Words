@@ -2,14 +2,22 @@
 module.exports = paths => {
     return new Promise((resolver, reject) => {
         try {
-            const rows = paths
-                .map(path => fs.readFileSync(path).toString('utf-8'))
-                .reduce((fullText, fileText) => `${fullText}\n${fileText}`)
-                .split('\n');
+            const groupedWords = paths.reduce((obj, word) => {
+                obj[word] = (obj[word] ? obj[word] : 0) + 1;
 
-            resolver(rows);
+                return obj;
+            }, {});
+
+            const groupedWordsArray = Object
+                .keys(groupedWords)
+                .map(key => ({ name: key, amount: groupedWords[key] }))
+                .sort((a, b) => b.amount - a.amount);
+
+            resolver(groupedWordsArray);
         } catch (e) {
             reject(e);
         }
+    }).catch(e => {
+        console.log(e);
     });
 };
